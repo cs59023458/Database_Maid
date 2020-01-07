@@ -2,7 +2,7 @@
 from flask import Flask, request, url_for, jsonify
 from flask_api import FlaskAPI, status, exceptions
 import paho.mqtt.client as mqttClient
-from tinydb import TinyDB
+from tinydb import TinyDB, Query
 import json
 import time
 
@@ -22,7 +22,7 @@ def on_message(client, userdata, message):
     y = json.loads(x)
     # linux
     # db = TinyDB('/pythonscript/db.json')
-    db = TinyDB('C:/Users/sitas/Desktop/database/db.json')
+    db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
     db.insert(y)
 
 
@@ -51,23 +51,39 @@ def test():
     if request.method == 'GET':
         # linux
         # db = TinyDB('/pythonscript/db.json')
-        db = TinyDB('C:/Users/sitas/Desktop/database/db.json')
+        db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
         a = db.all()
         return jsonify(a)
 
     elif request.method == 'PUT':
-        return jsonify({"H": "no hello world"})
+        return jsonify({"TEST": "PASS"})
     # return data
 
 
 @app.route("/del", methods=['GET'])
 def delete():
     if request.method == 'GET':
-        db = TinyDB('/pythonscript/db.json')
+        # linux
+        # db = TinyDB('/pythonscript/db.json')
+        db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
         db.purge()
         return jsonify({"Delete": "OK"})
 
 
+@app.route("/up/<a>", methods=['GET'])
+def up(a):
+    # read file data
+    # reconsctuction data
+    if request.method == 'GET':
+        # linux
+        # db = TinyDB('/pythonscript/db.json')
+        db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
+        Q = Query()
+        db.update({'status': "0"}, Q.id == '%s' % a)
+        # b = db.search(Q.id == '%s' % a)
+        return jsonify({"id": a, "status": "2"})
+
 if __name__ == "__main__":
     app.debug = True
-    app.run(host='0.0.0.0', port=5010)
+    # app.run(host='0.0.0.0', port=5010)
+    app.run(host='localhost', port=5000)
