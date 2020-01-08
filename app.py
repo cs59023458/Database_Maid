@@ -18,12 +18,15 @@ def on_connect(client, userdata, flags, rc):
 
 
 def on_message(client, userdata, message):
-    x = message.payload.decode("utf-8", "strict")
-    y = json.loads(x)
-    # linux
-    # db = TinyDB('/pythonscript/db.json')
     db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
-    db.insert(y)
+    x = message.payload.decode("utf-8", "strict")
+    a = db.all()
+    y = json.loads(x)
+    if (y.id != a.id):
+        # linux
+        # db = TinyDB('/pythonscript/db.json')
+        db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
+        db.insert(y)
 
 
 broker_address = "192.168.1.1"
@@ -43,6 +46,25 @@ client.subscribe("/maid/")
 
 app = FlaskAPI(__name__)
 
+@app.route("/order/<a>", methods=['GET'])
+def order(a):
+    # read file data
+    # reconsctuction data
+    if request.method == 'GET':
+        # linux
+        # db = TinyDB('/pythonscript/db.json')
+        db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
+        Q = Query()
+        b = db.search(Q.id == '%s' % a)
+        c = b[0]
+        d = c['order']
+        # print(d)
+        # print(type(d))
+        e = d[0]
+        # print(e['amount'])
+        # print(type(e))
+        return jsonify(d)
+    # return data
 
 @app.route("/test", methods=['GET', 'PUT'])
 def test():
