@@ -18,15 +18,30 @@ def on_connect(client, userdata, flags, rc):
 
 
 def on_message(client, userdata, message):
+    # linux
+        # db = TinyDB('/pythonscript/db.json')
     db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
     x = message.payload.decode("utf-8", "strict")
     a = db.all()
     y = json.loads(x)
-    if (y.id != a.id):
+    if (y.id != a.id or a.id == None):
+        # linux
+        # db = TinyDB('/pythonscript/db.json')
+        db.insert(y)
+
+    if (len(y) == 2):
         # linux
         # db = TinyDB('/pythonscript/db.json')
         db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
-        db.insert(y)
+        if (y.status == 0):
+            Q = Query()
+            db.update({'status': "0"}, Q.id == '%s' % a)
+        elif (y.status == 1):
+            Q = Query()
+            db.update({'status': "1"}, Q.id == '%s' % a)
+        elif (y.status == 2):
+            Q = Query()
+            db.update({'status': "2"}, Q.id == '%s' % a)
 
 
 broker_address = "192.168.1.1"
