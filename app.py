@@ -19,29 +19,26 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, message):
     # linux
-        # db = TinyDB('/pythonscript/db.json')
+    # db = TinyDB('/pythonscript/db.json')
     db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
-    x = message.payload.decode("utf-8", "strict")
-    a = db.all()
-    y = json.loads(x)
-    if (y.id != a.id or a.id == None):
-        # linux
-        # db = TinyDB('/pythonscript/db.json')
+    Q = Query()
+    result = message.payload.decode("utf-8", "strict")
+    result_db = db.all()
+    result_json = json.loads(result)
+    result_len = len(result_json)
+    result_id = y["id"]
+    result_status = y["status"]
+
+    if (result_len != 2):
         db.insert(y)
 
-    if (len(y) == 2):
-        # linux
-        # db = TinyDB('/pythonscript/db.json')
-        db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
-        if (y.status == 0):
-            Q = Query()
-            db.update({'status': "0"}, Q.id == '%s' % a)
-        elif (y.status == 1):
-            Q = Query()
-            db.update({'status': "1"}, Q.id == '%s' % a)
-        elif (y.status == 2):
-            Q = Query()
-            db.update({'status': "2"}, Q.id == '%s' % a)
+    if (result_len == 2):
+        if (result_status == "3"):
+            db.update({'status': "3"}, Q.id == '%s' % result_id)
+        elif (result_status == "2"):
+            db.update({'status': "2"}, Q.id == '%s' % result_id)
+        elif (result_status == "1"):
+            db.update({'status': "1"}, Q.id == '%s' % result_id)
 
 
 broker_address = "192.168.1.1"
@@ -57,14 +54,13 @@ client.on_message = on_message
 client.connect(broker_address, port=port)
 client.loop_start()
 
-client.subscribe("/maid/")
+client.subscribe("/maid/", 0)
 
 app = FlaskAPI(__name__)
 
+
 @app.route("/order/<a>", methods=['GET'])
 def order(a):
-    # read file data
-    # reconsctuction data
     if request.method == 'GET':
         # linux
         # db = TinyDB('/pythonscript/db.json')
@@ -73,18 +69,12 @@ def order(a):
         b = db.search(Q.id == '%s' % a)
         c = b[0]
         d = c['order']
-        # print(d)
-        # print(type(d))
         e = d[0]
-        # print(e['amount'])
-        # print(type(e))
         return jsonify(d)
-    # return data
 
-@app.route("/test", methods=['GET', 'PUT'])
-def test():
-    # read file data
-    # reconsctuction data
+
+@app.route("/", methods=['GET', 'PUT'])
+def index():
     if request.method == 'GET':
         # linux
         # db = TinyDB('/pythonscript/db.json')
@@ -94,7 +84,6 @@ def test():
 
     elif request.method == 'PUT':
         return jsonify({"TEST": "PASS"})
-    # return data
 
 
 @app.route("/del", methods=['GET'])
@@ -107,18 +96,28 @@ def delete():
         return jsonify({"Delete": "OK"})
 
 
-@app.route("/up/<a>", methods=['GET'])
-def up(a):
-    # read file data
-    # reconsctuction data
+@app.route("/up/<a>/<b>", methods=['GET'])
+def upstatus(a, b):
     if request.method == 'GET':
         # linux
         # db = TinyDB('/pythonscript/db.json')
         db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
         Q = Query()
-        db.update({'status': "0"}, Q.id == '%s' % a)
-        # b = db.search(Q.id == '%s' % a)
-        return jsonify({"id": a, "status": "2"})
+        db.update({'status': b}, Q.id == '%s' % a)
+        z = db.all()
+        return jsonify(z)
+
+
+@app.route("/date/<a>", methods=['GET'])
+def date(a):
+    if request.method == 'GET':
+        # linux
+        # db = TinyDB('/pythonscript/db.json')
+        db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
+        Q = Query()
+        b = db.search(Q.date == '%s' % a)
+        return jsonify(b)
+
 
 if __name__ == "__main__":
     app.debug = True
