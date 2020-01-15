@@ -26,11 +26,11 @@ def on_message(client, userdata, message):
     result_db = db.all()
     result_json = json.loads(result)
     result_len = len(result_json)
-    result_id = y["id"]
-    result_status = y["status"]
+    result_id = result_json["id"]
+    result_status = result_json["status"]
 
     if (result_len != 2):
-        db.insert(y)
+        db.insert(result_json)
 
     if (result_len == 2):
         if (result_status == "3"):
@@ -118,6 +118,15 @@ def date(a):
         b = db.search(Q.date == '%s' % a)
         return jsonify(b)
 
+@app.route("/room/<a>", methods=['GET'])
+def room(a):
+    if request.method == 'GET':
+        # linux
+        # db = TinyDB('/pythonscript/db.json')
+        db = TinyDB('C:/Users/sitas/Desktop/Database_Maid/db.json')
+        Q = Query()
+        b = db.search(Q.room == '%s' % a)
+        return jsonify(b)
 
 if __name__ == "__main__":
     app.debug = True
