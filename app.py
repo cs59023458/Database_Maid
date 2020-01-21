@@ -28,17 +28,21 @@ def on_message(client, userdata, message):
     result_len = len(result_json)
     result_id = result_json["id"]
     result_status = result_json["status"]
-
-    if (result_len != 2):
-        db.insert(result_json)
-
-    if (result_len == 2):
-        if (result_status == "3"):
-            db.update({'status': "3"}, Q.id == '%s' % result_id)
-        elif (result_status == "2"):
-            db.update({'status': "2"}, Q.id == '%s' % result_id)
-        elif (result_status == "1"):
-            db.update({'status': "1"}, Q.id == '%s' % result_id)
+    result_time = result_json["time"]
+    data = db.search(Q.id == '%s' % result_id and Q.time == '%s' % result_time)
+    z = data.pop()
+    print(z)
+    print(result_json)
+    if (z == result_json):
+        if (result_len != 2):
+            db.insert(result_json)
+        if (result_len == 2):
+            if (result_status == "3"):
+                db.update({'status': "3"}, Q.id == '%s' % result_id)
+            elif (result_status == "2"):
+                db.update({'status': "2"}, Q.id == '%s' % result_id)
+            elif (result_status == "1"):
+                db.update({'status': "1"}, Q.id == '%s' % result_id)
 
 
 broker_address = "192.168.1.1"
